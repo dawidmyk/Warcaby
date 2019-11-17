@@ -8,10 +8,11 @@ from helpers.getInt import getInt
 
 # stan początkowy
 from helpers.horizontalConcat import horizontalConcat
+from helpers.stringBuilder import StringBuilder
 
 state = CheckersState()
 
-logBuffer = ''
+logBuffer = StringBuilder()
 
 while not state.isWon():
     clearConsole()
@@ -29,13 +30,15 @@ while not state.isWon():
         for i in range(len(availableMoves)):
             movesBuffer = movesBuffer + str(i + 1) + ': ' + str(availableMoves[i]) + os.linesep
 
-        print(horizontalConcat(gameBuffer, movesBuffer, '  |  '))
+        print(horizontalConcat(horizontalConcat(gameBuffer, movesBuffer, '  |  '), str(logBuffer), '  |  '))
 
         while True:
-            choice = getInt('Wybierz ruch:') - 1
+            choice = getInt('Wybierz ruch: ') - 1
             if 0 <= choice < len(availableMoves):
                 nextMove = availableMoves[choice]
                 break
+
+        logBuffer.append('Biały:  ')
 
     # Ruch komputera
     if state.isBlackMove():
@@ -44,4 +47,10 @@ while not state.isWon():
         choice = random.randrange(0, len(availableMoves))
         nextMove = availableMoves[choice]
 
+        logBuffer.append('Czarny: ')
+
     state = CheckersState(nextMove)
+
+    # log gry
+
+    logBuffer.append(nextMove).newLine()

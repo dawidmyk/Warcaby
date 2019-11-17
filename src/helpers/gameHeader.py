@@ -2,7 +2,7 @@ import math
 
 
 def gameHeader():
-    title = "Warcaby"
+    title = " Warcaby "
 
     authorsTitle = "Autorzy:"
     authors = ["Adam Jędrzejowski", "Dawid Mackiewicz"]
