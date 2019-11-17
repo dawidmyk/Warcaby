@@ -1,6 +1,7 @@
 import os
 from game.move import CheckerMove
 from game.type import CheckerType
+from helpers.stringBuilder import StringBuilder
 
 
 class CheckersState:
@@ -65,39 +66,41 @@ class CheckersState:
         pawnSpecialWhite = '<▣>'
         pawnNormalBlack = ' □ '
         pawnSpecialBlack = '<□>'
-        empty = '   '
+        emptyCell = '   '
 
-        buffer = ''
+        buffer = StringBuilder()
 
         rowSpacer1 = cross
         for x in range(self._sizeX):
             rowSpacer1 = rowSpacer1 + hLine + str(x + 1) + hLine + cross
         rowSpacer2 = cross + (hLine * 3 + cross) * self._sizeX
 
-        buffer = buffer + rowSpacer1 + os.linesep
+        buffer.append(rowSpacer1).newLine()
         y = 0
         for row in self._board:
-            line = str(y + 1)
+            line = StringBuilder()
+            line.append(y + 1)
 
             for cell in row:
-                content = empty
 
                 if cell == CheckerType.blackNormal():
-                    content = pawnNormalBlack
-                if cell == CheckerType.whiteNormal():
-                    content = pawnNormalWhite
-                if cell == CheckerType.blackSpecial():
-                    content = pawnSpecialBlack
-                if cell == CheckerType.whiteSpecial():
-                    content = pawnSpecialWhite
+                    line.append(pawnNormalBlack)
+                elif cell == CheckerType.whiteNormal():
+                    line.append(pawnNormalWhite)
+                elif cell == CheckerType.blackSpecial():
+                    line.append(pawnSpecialBlack)
+                elif cell == CheckerType.whiteSpecial():
+                    line.append(pawnSpecialWhite)
+                else:
+                    line.append(emptyCell)
 
-                line = line + content + vLine
+                line.append(vLine)
 
-            buffer = buffer + line + os.linesep
-            buffer = buffer + rowSpacer2 + os.linesep
+            buffer.append(line).newLine()
+            buffer.append(rowSpacer2).newLine()
             y = y + 1
 
-        return buffer
+        return str(buffer)
 
     def _generateAvailableMoves(self):
         for x in range(self._sizeX):

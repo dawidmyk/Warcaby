@@ -5,6 +5,14 @@ class StringBuilder:
     def __init__(self):
         self._body = ''
 
+    def clear(self):
+        """
+
+        :return StringBuilder:
+        """
+        self._body = ''
+        return self
+
     def append(self, text):
         """
         :param text:
@@ -14,6 +22,10 @@ class StringBuilder:
         return self
 
     def newLine(self):
+        """
+
+        :return StringBuilder:
+        """
         return self.append(os.linesep)
 
     def __str__(self):

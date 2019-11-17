@@ -24,13 +24,13 @@ while not state.isWon():
     # Ruch gracza
     if state.isWhiteMove():
         gameBuffer = state.boardString()
-        movesBuffer = ''
+        movesBuffer = StringBuilder()
 
-        movesBuffer = movesBuffer + "Dostępne ruchy: " + os.linesep
+        movesBuffer.append("Dostępne ruchy: ").newLine()
         for i in range(len(availableMoves)):
-            movesBuffer = movesBuffer + str(i + 1) + ': ' + str(availableMoves[i]) + os.linesep
+            movesBuffer.append(i + 1).append(': ').append(availableMoves[i]).newLine()
 
-        print(horizontalConcat(horizontalConcat(gameBuffer, movesBuffer, '  |  '), str(logBuffer), '  |  '))
+        print(horizontalConcat(horizontalConcat(gameBuffer, str(movesBuffer), '  |  '), str(logBuffer), '  |  '))
 
         while True:
             choice = getInt('Wybierz ruch: ') - 1
