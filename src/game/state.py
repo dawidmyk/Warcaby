@@ -6,17 +6,17 @@ from game.type import CheckerType
 class CheckersState:
     _sizeX = 8
     _sizeY = 8
-    _next = CheckerType.whiteNormal()
-    _availableMoves = []
 
     def __init__(self, move: CheckerMove = None):
         # alokacja pustej planszy
         self._board = [[None for x in range(self._sizeX)] for y in range(self._sizeY)]
+        self._availableMoves = []
 
         if move == None:
+            self._next = CheckerType.whiteNormal()
             self._initStartingBoard()
         else:
-            self._insertPawnsFrom(move)
+            self._insertDataFrom(move)
 
         self._generateAvailableMoves()
 
@@ -34,13 +34,29 @@ class CheckersState:
         for x in range(self._sizeX - fillRows, self._sizeX):
             fillRow(x, CheckerType.whiteNormal())
 
-    """
-    """
+    def _insertDataFrom(self, move: CheckerMove):
+        lastState: CheckersState = move.getState()
 
-    def _insertPawnsFrom(self, move: CheckerMove):
-        lastState = move.getFromX()
+        if lastState.isWhiteMove():
+            self._next = CheckerType.blackNormal()
+        if lastState.isBlackMove():
+            self._next = CheckerType.whiteNormal()
 
-    def __str__(self):
+        # przepisanie planszy
+        for x in range(self._sizeX):
+            for y in range(self._sizeY):
+                self._board[x][y] = lastState._board[x][y]
+
+        # przestawianie pionka
+        pawn2move = lastState.getPawnType(move.getFromX(), move.getFromY())
+        self._setPawn(move.getFromX(), move.getFromY(), None)
+        self._setPawn(move.getToX(), move.getToY(), pawn2move)
+
+        # i usuwanie jak bedzie potrzeba
+        if move.hasRemove():
+            self._setPawn(move.getRemoveX(), move.getRemoveY(), None)
+
+    def boardString(self):
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
         vLine = '║'
         hLine = '═'
@@ -113,23 +129,27 @@ class CheckersState:
                         return
                     if self.isEmpty(x3, y3):
                         self._availableMoves.append(
-                            CheckerMove(self, x, y, x3, y3))
+                            CheckerMove(self, x, y, x3, y3, x2, y2))
 
-                if pawn == CheckerType.blackNormal():
-                    ## czarne idą w dół(+)
-                    moveNormal(+1, +1)
-                    moveNormal(+1, -1)
+                if self.isBlackMove():
 
-                if pawn == CheckerType.whiteNormal():
-                    ## czarne idą w góre(-)
-                    moveNormal(-1, +1)
-                    moveNormal(-1, -1)
+                    if pawn == CheckerType.blackNormal():
+                        ## czarne idą w dół(+)
+                        moveNormal(+1, +1)
+                        moveNormal(+1, -1)
 
-                if pawn == CheckerType.blackSpecial():
-                    pass
+                    if pawn == CheckerType.blackSpecial():
+                        pass
 
-                if pawn == CheckerType.whiteSpecial():
-                    pass
+                if self.isWhiteMove():
+
+                    if pawn == CheckerType.whiteNormal():
+                        ## czarne idą w góre(-)
+                        moveNormal(-1, +1)
+                        moveNormal(-1, -1)
+
+                    if pawn == CheckerType.whiteSpecial():
+                        pass
 
     def getAvailableMoves(self):
         return self._availableMoves

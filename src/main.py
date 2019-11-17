@@ -14,7 +14,7 @@ state = CheckersState()
 logBuffer = ''
 
 while not state.isWon():
-    # clearConsole()
+    clearConsole()
     gameHeader()
 
     availableMoves = state.getAvailableMoves()
@@ -22,7 +22,7 @@ while not state.isWon():
 
     # Ruch gracza
     if state.isWhiteMove():
-        gameBuffer = str(state)
+        gameBuffer = state.boardString()
         movesBuffer = ''
 
         movesBuffer = movesBuffer + "Dostępne ruchy: " + os.linesep
