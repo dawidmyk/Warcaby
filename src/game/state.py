@@ -1,3 +1,4 @@
+import os
 from src.game.move import CheckerMove
 from src.game.type import CheckerType
 
@@ -5,37 +6,58 @@ from src.game.type import CheckerType
 class CheckersState:
     _sizeX = 8
     _sizeY = 8
-    _next = None
+    _next = CheckerType.whiteNormal()
     _availableMoves = []
 
     def __init__(self, move=None):
         # alokacja pustej planszy
         self._board = [[None for x in range(self._sizeX)] for y in range(self._sizeY)]
 
-        self._board[3][4] = 'B'
-        self._board[4][3] = 'w'
-        self._board[6][7] = 'W'
-        self._board[7][6] = 'b'
+        if move == None:
+            self._initStartingBoard()
+        else:
+            self._insertPawnsFrom(move)
 
         self._generateAvailableMoves()
 
-    def printBoard(self):
+    def _initStartingBoard(self):
+        fillRows = 3
+
+        def fillRow(x, type):
+            offset = x % 2
+            for y in range(0 + offset, self._sizeX + offset, 2):
+                self._setPawn(x, y, type)
+
+        for x in range(0, fillRows):
+            fillRow(x, CheckerType.blackNormal())
+
+        for x in range(self._sizeX - fillRows, self._sizeX):
+            fillRow(x, CheckerType.whiteNormal())
+
+    """
+    """
+    def _insertPawnsFrom(self, move):
+        lastState = 0
+
+    def __str__(self):
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
         vLine = '║'
         hLine = '═'
         cross = '╬'
-        pawnNormalWhite = ' O '
-        pawnSpecialWhite = '<O>'
-        pawnNormalBlack = ' X '
-        pawnSpecialBlack = '<X>'
+        pawnNormalWhite = ' □ '
+        pawnSpecialWhite = '<□>'
+        pawnNormalBlack = ' ▣ '
+        pawnSpecialBlack = '<▣>'
         empty = '   '
+
+        buffer = ''
 
         rowSpacer1 = cross
         for x in range(self._sizeX):
             rowSpacer1 = rowSpacer1 + hLine + str(x + 1) + hLine + cross
         rowSpacer2 = cross + (hLine * 3 + cross) * self._sizeX
 
-        print(rowSpacer1)
+        buffer = buffer + rowSpacer1 + os.linesep
         y = 0
         for row in self._board:
             line = str(y + 1)
@@ -54,9 +76,11 @@ class CheckersState:
 
                 line = line + content + vLine
 
-            print(line)
-            print(rowSpacer2)
+            buffer = buffer + line + os.linesep
+            buffer = buffer + rowSpacer2 + os.linesep
             y = y + 1
+
+        return buffer
 
     def _generateAvailableMoves(self):
         for x in range(self._sizeX):
@@ -67,7 +91,7 @@ class CheckersState:
                     x2, y2 = x + dx, y + dy
 
                     # jeżeli pozycje nie jest na planysz to koniec
-                    if not self.isPositionValid(x2, x2):
+                    if not self.isPositionValid(x2, y2):
                         return
 
                     pawn2 = self.getPawnType(x2, y2)
@@ -109,9 +133,6 @@ class CheckersState:
     def getAvailableMoves(self):
         return self._availableMoves
 
-    def movePawn(self, x1, y1, x2, y2):
-        return self
-
     def isWhiteMove(self):
         return CheckerType.isWhite(self._next)
 
@@ -119,7 +140,7 @@ class CheckersState:
         return CheckerType.isBlack(self._next)
 
     def _setPawn(self, x, y, pawn):
-        pass
+        self._board[x][y] = pawn
 
     def isPositionValid(self, x, y):
         return 0 <= x < self._sizeX and 0 <= y < self._sizeY
@@ -142,5 +163,3 @@ class CheckersState:
                     wasWhite = True
 
         return wasWhite != wasBlack
-
-
