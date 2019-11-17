@@ -1,6 +1,6 @@
 import os
-from src.game.move import CheckerMove
-from src.game.type import CheckerType
+from game.move import CheckerMove
+from game.type import CheckerType
 
 
 class CheckersState:
@@ -9,7 +9,7 @@ class CheckersState:
     _next = CheckerType.whiteNormal()
     _availableMoves = []
 
-    def __init__(self, move=None):
+    def __init__(self, move: CheckerMove = None):
         # alokacja pustej planszy
         self._board = [[None for x in range(self._sizeX)] for y in range(self._sizeY)]
 
@@ -36,8 +36,9 @@ class CheckersState:
 
     """
     """
-    def _insertPawnsFrom(self, move):
-        lastState = 0
+
+    def _insertPawnsFrom(self, move: CheckerMove):
+        lastState = move.getFromX()
 
     def __str__(self):
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec

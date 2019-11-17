@@ -1,21 +1,22 @@
+
 class CheckerMove:
-    def __init__(self, state, x1, y1, x2, y2):
+    def __init__(self, state, x1: int, y1: int, x2: int, y2: int):
         self._x1 = x1
         self._y1 = y1
         self._x2 = x2
         self._y2 = y2
         self._state = state
 
-    def getFromX(self):
+    def getFromX(self) -> int:
         return self._x1
 
-    def getFromY(self):
+    def getFromY(self) -> int:
         return self._y1
 
-    def getToX(self):
+    def getToX(self) -> int:
         return self._x2
 
-    def getToY(self):
+    def getToY(self) -> int:
         return self._y2
 
     def __str__(self):

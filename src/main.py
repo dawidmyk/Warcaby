@@ -1,13 +1,13 @@
 import os
 import random
 
-from src.game.state import CheckersState
-from src.helpers.clearConsole import clearConsole
-from src.helpers.gameHeader import gameHeader
-from src.helpers.getInt import getInt
+from game.state import CheckersState
+from helpers.clearConsole import clearConsole
+from helpers.gameHeader import gameHeader
+from helpers.getInt import getInt
 
 # stan początkowy
-from src.helpers.horizontalConcat import horizontalConcat
+from helpers.horizontalConcat import horizontalConcat
 
 state = CheckersState()
 
