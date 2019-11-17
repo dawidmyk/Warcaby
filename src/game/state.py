@@ -7,7 +7,7 @@ class CheckersState:
     _sizeX = 8
     _sizeY = 8
 
-    def __init__(self, move: CheckerMove = None):
+    def __init__(self, move = None):
         # alokacja pustej planszy
         self._board = [[None for x in range(self._sizeX)] for y in range(self._sizeY)]
         self._availableMoves = []
@@ -34,8 +34,8 @@ class CheckersState:
         for x in range(self._sizeX - fillRows, self._sizeX):
             fillRow(x, CheckerType.whiteNormal())
 
-    def _insertDataFrom(self, move: CheckerMove):
-        lastState: CheckersState = move.getState()
+    def _insertDataFrom(self, move):
+        lastState = move.getState()
 
         if lastState.isWhiteMove():
             self._next = CheckerType.blackNormal()

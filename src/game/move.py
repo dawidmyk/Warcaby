@@ -1,5 +1,5 @@
 class CheckerMove:
-    def __init__(self, state, x1: int, y1: int, x2: int, y2: int, xRemove: int = -1, yRemove: int = -1):
+    def __init__(self, state, x1, y1, x2, y2, xRemove = -1, yRemove = -1):
         self._x1 = x1
         self._y1 = y1
         self._x2 = x2
