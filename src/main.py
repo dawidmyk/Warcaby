@@ -10,7 +10,8 @@ from helpers.getInt import getInt
 from helpers.horizontalConcat import horizontalConcat
 from helpers.stringBuilder import StringBuilder
 
-state = CheckersState()
+num = 4
+state = CheckersState(None, num)
 
 logBuffer = StringBuilder()
 
@@ -44,12 +45,12 @@ while not state.isWon():
     if state.isBlackMove():
         # komputer wybiera losowy ruch
         # i tu jest miejsce gdzie robisz magie
-        choice = random.randrange(0, len(availableMoves))
-        nextMove = availableMoves[choice]
+        _, nextMove = state.routeDown(1)
 
         logBuffer.append('Czarny: ')
 
-    state = CheckersState(nextMove)
+    state = state.getNextState(move)
+    state.deeper()
 
     # log gry
 

@@ -3,12 +3,16 @@ from game.move import CheckerMove
 from game.type import CheckerType
 from helpers.stringBuilder import StringBuilder
 
-
+def signum(i):
+	if i > 0: return 1
+	if i < 0: return -1
+	return 0
+	
 class CheckersState:
     _sizeX = 8
     _sizeY = 8
 
-    def __init__(self, move = None):
+    def __init__(self, move, num):
         # alokacja pustej planszy
         self._board = [[None for x in range(self._sizeX)] for y in range(self._sizeY)]
         self._availableMoves = []
@@ -19,7 +23,7 @@ class CheckersState:
         else:
             self._insertDataFrom(move)
 
-        self._generateAvailableMoves()
+        if not self.isWon(): self._generateAvailableMoves(num)
 
     def _initStartingBoard(self):
         fillRows = 3
@@ -102,7 +106,11 @@ class CheckersState:
 
         return str(buffer)
 
-    def _generateAvailableMoves(self):
+    def _generateAvailableMoves(self, num):
+        if num == 0:
+			  self._edge = True
+			  return
+		  self._edge = False
         for x in range(self._sizeX):
             for y in range(self._sizeY):
                 pawn = self._board[x][y]
@@ -118,8 +126,9 @@ class CheckersState:
 
                     if self.isEmpty(x2, y2):
                         # czyli nie niema na tej pozycji
-                        self._availableMoves.append(
-                            CheckerMove(self, x, y, x2, y2))
+                        self.postMove(CheckerMove(self, x, y, x2, y2), num)
+                    
+                        # konstruktor wygeneruje kolejne
                         return
 
                     # w przypadku kiedy jest z tej samej drużyny to nie możemy się ruszyć
@@ -131,9 +140,8 @@ class CheckersState:
                     if not self.isPositionValid(x3, y3):
                         return
                     if self.isEmpty(x3, y3):
-                        self._availableMoves.append(
-                            CheckerMove(self, x, y, x3, y3, x2, y2))
-
+                        self.postMove(CheckerMove(self, x, y, x3, y3, x2, y2), num)
+                        
                 if self.isBlackMove():
 
                     if pawn == CheckerType.blackNormal():
@@ -153,7 +161,9 @@ class CheckersState:
 
                     if pawn == CheckerType.whiteSpecial():
                         pass
-
+    def postMove(self, move, num):
+		 self._availableMoves.append(move)
+		 self._nextStates{move} = CheckersState(move, num - 1)
     def getAvailableMoves(self):
         return self._availableMoves
 
@@ -187,3 +197,35 @@ class CheckersState:
                     wasWhite = True
 
         return wasWhite != wasBlack
+     
+     def deeper(self):
+		   if self.isWon() return
+			if self._edge:
+				self._generateAvailableMoves(1)
+				
+         else: for state in _nextStates:
+				state.deeper()
+				
+		def getNextState(self, move):
+			return self._nextState{move}
+			
+		def routeDown(self, dire):
+			
+			score = None
+			properMove = None
+			if self._edge: return self.heuristics(), None
+			for move in self._availableMoves:
+				newState = self.getNextState(move)
+				i, _ = self.routeDown(-dire)
+				if(score == None || signum(i - score) == dire):
+					#tu może być -dire zamiast dire
+					 score = i
+					 properMove = move
+			
+			if score == None: return 0, None
+			return score, properMove
+				
+		def heuristics():
+			return # liczba pionków czarnych - pionków białych
+			# do tego niech damki się liczą jako np. 4 pionki
+			# i odpowiednie liczby punktów za wygraną / przegraną
