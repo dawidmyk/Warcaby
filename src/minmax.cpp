@@ -1,3 +1,4 @@
+//Jak coś ten plik jest tu tylko jako pewien wzór algorytmu
 #include <memory>
 #include <vector>
 class State;
@@ -6,6 +7,8 @@ typedef std::vector<std::unique_ptr<State>> StateCollection;
 class State {
 	std::unique_ptr<StateCollection> mine;
 	void unroll();
+	int heuristics();
+	bool operator == (const State & another);
 	
 	void step(int depth) {
 		if(mine != nullptr) for(auto & st : *mine) st->step(depth);
@@ -19,6 +22,7 @@ class State {
 	}
 	
 	std::pair<int, int> route(char type) {
+		if(mine == nullptr) return std::pair<int, int>(-1, heuristics());
 		int quantity = mine->size();
 		int values[quantity];
 		int score;
