@@ -1,5 +1,4 @@
 import math
-
 from game.type import CheckerType
 
 
@@ -9,7 +8,8 @@ class CheckerMove:
         self._y1 = y1
         self._x2 = x2
         self._y2 = y2
-        self._state = state
+        self._state1 = state
+        self._state2 = None
         self._pawn = state.getPawnType(x1, y1)
 
         # określenie bicia
@@ -31,10 +31,16 @@ class CheckerMove:
             else:
                 x = x + dx
                 y = y + dy
-        print(self._xBeat, self._yBeat)
 
-    def getState(self):
-        return self._state
+    def getStateFrom(self):
+        return self._state1
+
+    def getStateTo(self):
+        if self._state2 is None:
+            from game.state import CheckersState
+            self._state2 = CheckersState(self)
+
+        return self._state2
 
     def getFromX(self) -> int:
         return self._x1

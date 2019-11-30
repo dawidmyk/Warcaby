@@ -1,4 +1,3 @@
-from game.move import CheckerMove
 from game.type import CheckerType
 from helpers.stringBuilder import StringBuilder
 
@@ -17,7 +16,7 @@ class CheckersState:
             self._next = CheckerType.whiteNormal()
             self._initStartingBoard()
         else:
-            self._insertDataFrom(move)
+            self._insertDataFromMove(move)
 
     def _initStartingBoard(self):
         fillRows = 3
@@ -33,19 +32,8 @@ class CheckersState:
         for x in range(self.SizeX - fillRows, self.SizeX):
             fillRow(x, CheckerType.whiteNormal())
 
-    def _insertDataFrom(self, move):
-        lastState = move.getState()
-
-        if move.hasBeat():
-            if lastState.isWhiteMove():
-                self._next = CheckerType.whiteNormal()
-            if lastState.isBlackMove():
-                self._next = CheckerType.blackNormal()
-        else:
-            if lastState.isWhiteMove():
-                self._next = CheckerType.blackNormal()
-            if lastState.isBlackMove():
-                self._next = CheckerType.whiteNormal()
+    def _insertDataFromMove(self, move):
+        lastState = move.getStateFrom()
 
         # przepisanie planszy
         for x in range(self.SizeX):
@@ -60,6 +48,31 @@ class CheckersState:
         self._setPawn(move.getToX(), move.getToY(), pawn2move)
         if move.hasBeat():
             self._setPawn(move.getBeatX(), move.getBeatY(), None)
+
+        # ustalenie następnego gracza
+
+        if move.hasBeat():
+
+            if lastState.isWhiteMove():
+                self._next = CheckerType.whiteNormal()
+            if lastState.isBlackMove():
+                self._next = CheckerType.blackNormal()
+
+            # tu jest troche triki, ponieważ możemy ontynłować, tylko wtedy gdy zbijemy i zijamy dalej
+            # dlatego generujemy ruchy i sprawdzmy czy możemy bić dalej, jak tak to nic nie robimy
+            self._generateAvailableMoves()
+            if not self._availableMoves[0].hasBeat():
+                if lastState.isWhiteMove():
+                    self._next = CheckerType.blackNormal()
+                if lastState.isBlackMove():
+                    self._next = CheckerType.whiteNormal()
+                self._generateAvailableMoves()
+
+        else:
+            if lastState.isWhiteMove():
+                self._next = CheckerType.blackNormal()
+            if lastState.isBlackMove():
+                self._next = CheckerType.whiteNormal()
 
     def boardString(self):
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
@@ -107,6 +120,8 @@ class CheckersState:
         return str(buffer)
 
     def _generateAvailableMoves(self):
+        from game.move import CheckerMove
+
         self._availableMoves = []
         for x in range(self.SizeX):
             for y in range(self.SizeY):
@@ -217,6 +232,13 @@ class CheckersState:
                         moveSpecial(+1, -1)
                         moveSpecial(-1, +1)
                         moveSpecial(-1, -1)
+
+        # wymuszenie bicia
+
+        for move in self._availableMoves:
+            if move.hasBeat():
+                self._availableMoves = list(filter(lambda move: move.hasBeat(), self._availableMoves))
+                break
 
     def getAvailableMoves(self):
         if self._availableMoves is None:

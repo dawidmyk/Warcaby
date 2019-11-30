@@ -16,7 +16,7 @@ state = CheckersState()
 logBuffer = StringBuilder()
 
 while not state.isEnd():
-    clearConsole()
+    # clearConsole()
     gameHeader()
 
     availableMoves = state.getAvailableMoves()
