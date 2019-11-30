@@ -1,5 +1,6 @@
 import os
 import random
+import time
 
 from game.state import CheckersState
 from helpers.clearConsole import clearConsole
@@ -14,24 +15,28 @@ state = CheckersState()
 
 logBuffer = StringBuilder()
 
-while not state.isWon():
+while not state.isEnd():
     clearConsole()
     gameHeader()
 
     availableMoves = state.getAvailableMoves()
     nextMove = None
 
-    # Ruch gracza
+    gameBuffer = state.boardString()
+    movesBuffer = StringBuilder()
+
     if state.isWhiteMove():
-        gameBuffer = state.boardString()
-        movesBuffer = StringBuilder()
+        movesBuffer.append("Ruch gracza")
+    if state.isBlackMove():
+        movesBuffer.append("Ruch kompuera")
 
-        movesBuffer.append("Dostępne ruchy: ").newLine()
-        for i in range(len(availableMoves)):
-            movesBuffer.append(i + 1).append(': ').append(availableMoves[i]).newLine()
+    movesBuffer.newLine().newLine().append("Dostępne ruchy: ").newLine()
+    for i in range(len(availableMoves)):
+        movesBuffer.append(i + 1).append(': ').append(availableMoves[i]).newLine()
 
-        print(horizontalConcat(horizontalConcat(gameBuffer, str(movesBuffer), '  |  '), str(logBuffer), '  |  '))
+    print(horizontalConcat(horizontalConcat(gameBuffer, str(movesBuffer), '  |  '), str(logBuffer), '  |  '))
 
+    if state.isWhiteMove():
         while True:
             choice = getInt('Wybierz ruch: ') - 1
             if 0 <= choice < len(availableMoves):
@@ -40,17 +45,16 @@ while not state.isWon():
 
         logBuffer.append('Biały:  ')
 
-    # Ruch komputera
     if state.isBlackMove():
         # komputer wybiera losowy ruch
         # i tu jest miejsce gdzie robisz magie
+        print("Komputer myśli ...")
+        time.sleep(3)
+
         choice = random.randrange(0, len(availableMoves))
         nextMove = availableMoves[choice]
 
         logBuffer.append('Czarny: ')
 
     state = CheckersState(nextMove)
-
-    # log gry
-
     logBuffer.append(nextMove).newLine()

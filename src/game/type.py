@@ -32,3 +32,11 @@ class CheckerType:
     def isSameTeam(pawn1, pawn2):
         return (CheckerType.isBlack(pawn1) and CheckerType.isBlack(pawn2)) or \
                (CheckerType.isWhite(pawn1) and CheckerType.isWhite(pawn2))
+
+    @staticmethod
+    def upgrade(pawn):
+        if pawn == CheckerType.whiteNormal():
+            return CheckerType.whiteSpecial()
+        if pawn == CheckerType.blackNormal():
+            return CheckerType.blackSpecial()
+        return pawn
