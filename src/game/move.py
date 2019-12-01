@@ -54,19 +54,18 @@ class CheckerMove:
     def getToY(self) -> int:
         return self._y2
 
-    def getBeatX(self):
-        return self._xBeat
-
-    def getBeatY(self):
-        return self._yBeat
+    def getPawnType(self):
+        return self._pawn
 
     def hasBeat(self):
         return self._xBeat != -1 and self._yBeat != -1
 
-    def hasPromotion(self):
-        from game.state import CheckersState
-        return (CheckerType.isWhite(self._pawn) and self._x2 == 0) or \
-               (CheckerType.isBlack(self._pawn) and self._x2 == CheckersState.SizeX - 1)
+    def executeOnBoard(self, board):
+        pawn2move = self._pawn
+        board[self._x1][self._y1] = None
+        board[self._x2][self._y2] = pawn2move
+        if self.hasBeat():
+            board[self._xBeat][self._yBeat] = None
 
     def selfSalary(self):
         return 0
@@ -74,18 +73,14 @@ class CheckerMove:
     def sumSalary(self):
         return 0
 
+    def getMovePoints(self):
+        return [[self._x1, self._y1], [self._x2, self._y2]]
+
     def __str__(self):
-        m = str(self._x1 + 1) + ',' + str(self._y1 + 1) + ' => ' + str(self._x2 + 1) + ',' + str(self._y2 + 1)
 
-        if self.hasBeat():
-            m = m + " B"
-        else:
-            m = m + "  "
-
-        if self.hasPromotion():
-            m = m + " P"
-        else:
-            m = m + "  "
+        m = str(self._x1 + 1) + ',' + str(self._y1 + 1) + \
+            ' -> ' + \
+            str(self._x2 + 1) + ',' + str(self._y2 + 1)
 
         return m
 

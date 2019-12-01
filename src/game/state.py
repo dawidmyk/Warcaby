@@ -11,6 +11,7 @@ class CheckersState:
         self._board = [[None for x in range(self.SizeX)] for y in range(self.SizeY)]
         self._availableMoves = None
         self._sumSalary = 0
+        self._isContinuousBeating = False
 
         if move == None:
             self._next = CheckerType.whiteNormal()
@@ -38,19 +39,12 @@ class CheckersState:
         # przepisanie planszy
         for x in range(self.SizeX):
             for y in range(self.SizeY):
-                self._board[x][y] = lastState._board[x][y]
+                self._setPawn(x, y, lastState.getPawnType(x, y))
 
         # przestawianie pionka
-        pawn2move = lastState.getPawnType(move.getFromX(), move.getFromY())
-        self._setPawn(move.getFromX(), move.getFromY(), None)
-        if move.hasPromotion():
-            pawn2move = CheckerType.upgrade(pawn2move)
-        self._setPawn(move.getToX(), move.getToY(), pawn2move)
-        if move.hasBeat():
-            self._setPawn(move.getBeatX(), move.getBeatY(), None)
+        move.executeOnBoard(self._board)
 
         # ustalenie następnego gracza
-
         if move.hasBeat():
 
             if lastState.isWhiteMove():
@@ -58,10 +52,20 @@ class CheckersState:
             if lastState.isBlackMove():
                 self._next = CheckerType.blackNormal()
 
-            # tu jest troche triki, ponieważ możemy ontynłować, tylko wtedy gdy zbijemy i zijamy dalej
-            # dlatego generujemy ruchy i sprawdzmy czy możemy bić dalej, jak tak to nic nie robimy
+            # tu jest troche triki, ponieważ możemy kontynłować, tylko wtedy gdy zbijemy i zbijamy dalej
+            # dlatego generujemy ruchy i sprawdzmy czy możemy bić dalej, ale tym konkretnym pionkiem
             self._generateAvailableMoves()
-            if not self._availableMoves[0].hasBeat():
+
+            def filerOurPawnMoves(newMove):
+                return newMove.getFromX() == move.getToX() and \
+                       newMove.getFromY() == move.getToY()
+
+            moves = list(filter(filerOurPawnMoves, self._availableMoves))
+            if len(moves) > 0 and moves[0].hasBeat():
+                # jest możliwośc kontynuacji bicia tym pionem
+                self._availableMoves = moves
+                self._isContinuousBeating = True
+            else:
                 if lastState.isWhiteMove():
                     self._next = CheckerType.blackNormal()
                 if lastState.isBlackMove():
@@ -73,6 +77,35 @@ class CheckersState:
                 self._next = CheckerType.blackNormal()
             if lastState.isBlackMove():
                 self._next = CheckerType.whiteNormal()
+
+        # rozwinięcie bić do ruchów złożonych
+        def extendBeatMove(move):
+            from game.moveComplex import CheckerMoveComplex
+
+            # jeżeli brak bicia to zwróć bicie
+            if not move.hasBeat():
+                return [move]
+
+            nextState = move.getStateTo()
+            if nextState.isContinuousBeating():
+                newMoves = []
+                for nextMove in nextState.getAvailableMoves():
+                    newMoves.append(CheckerMoveComplex(move, nextMove))
+
+                return newMoves
+            else:
+                return [move]
+
+        self._availableMoves = list(map(extendBeatMove, self.getAvailableMoves()))
+        # wyprostowanie listy, ponieważ teraz mamy liste list
+        # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
+        self._availableMoves = [item for sublist in self._availableMoves for item in sublist]
+
+        # upgrade do damki
+        if not self._isContinuousBeating and (
+                (CheckerType.isWhite(move.getPawnType()) and move.getToX() == 0) or
+                (CheckerType.isBlack(move.getPawnType()) and move.getToX() == CheckersState.SizeX - 1)):
+            self._setPawn(move.getToX(), move.getToY(), CheckerType.upgrade(move.getPawnType()))
 
     def boardString(self):
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
@@ -263,6 +296,9 @@ class CheckersState:
 
     def isFieldEmpty(self, x, y):
         return not CheckerType.isValid(self.getPawnType(x, y))
+
+    def isContinuousBeating(self):
+        return self._isContinuousBeating
 
     def isEnd(self):
         wasBlack = True
