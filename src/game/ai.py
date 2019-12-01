@@ -14,7 +14,9 @@ def ai_magic_stuff(moves):
 
     # magia zawsze trwa 3 sekundy(lub dłużej)
     endTime = int(round(time.time() * 1000))
-    print(3 - ((endTime - startTime) / 1000))
+    algTime = (endTime - startTime) / 1000
+    if algTime < 3:
+        time.sleep(3 - algTime)
 
     return nextMove
 

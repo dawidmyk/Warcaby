@@ -84,5 +84,9 @@ Sam algorytm jest dość prosty w implementacji.
 ## Autorzy
 
 Adam Jędrzejowski <adam@jedrzejowski.pl>
+<br>
+Implementacja stanów i zasad gry.
 
 Dawid Mackiewicz <dawidmyk@wp.pl>
+<br>
+Implementacja algorytmów decyzyjnych.
