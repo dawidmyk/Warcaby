@@ -2,6 +2,7 @@ import os
 import random
 import time
 
+from game.ai import move_min_max
 from game.state import CheckersState
 from helpers.clearConsole import clearConsole
 from helpers.gameHeader import gameHeader
@@ -48,13 +49,14 @@ while not state.isEnd():
     if state.isBlackMove():
         # komputer wybiera losowy ruch
         # i tu jest miejsce gdzie robisz magie
+
         print("Komputer myśli ...")
-        time.sleep(3)
-
-        # jakbyś chciał rozbudować stany to robisz to tak
-
-        choice = random.randrange(0, len(availableMoves))
-        nextMove = availableMoves[choice]
+        startTime = int(round(time.time() * 1000))
+        # choice = random.randrange(0, len(availableMoves))
+        # nextMove = availableMoves[choice]
+        nextMove = move_min_max(availableMoves, 5)
+        endTime = int(round(time.time() * 1000))
+        time.sleep((endTime - startTime)/1000)
 
         logBuffer.append('Czarny: ')
 
