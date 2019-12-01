@@ -51,6 +51,8 @@ while not state.isEnd():
         print("Komputer myśli ...")
         time.sleep(3)
 
+        # jakbyś chciał rozbudować stany to robisz to tak
+
         choice = random.randrange(0, len(availableMoves))
         nextMove = availableMoves[choice]
 
@@ -58,3 +60,5 @@ while not state.isEnd():
 
     state = CheckersState(nextMove)
     logBuffer.append(nextMove).newLine()
+
+endType = state.endType()

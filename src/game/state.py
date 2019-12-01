@@ -158,7 +158,7 @@ class CheckersState:
         self._availableMoves = []
         for x in range(self.SizeX):
             for y in range(self.SizeY):
-                pawn = self._board[x][y]
+                pawn = self.getPawnType(x, y)
 
                 def moveNormalForward(dx, dy):
                     x2, y2 = x + dx, y + dy
@@ -301,6 +301,48 @@ class CheckersState:
         return self._isContinuousBeating
 
     def isEnd(self):
+        return self.endType() is not None
+
+    def getSalary(self):
+        specialFactor = 1.6
+
+        blackNormalCount = 0
+        blackSpecialCount = 0
+        whiteNormalCount = 0
+        whiteSpecialCount = 0
+        others = 0
+
+        for x in range(self.SizeX):
+            for y in range(self.SizeY):
+                pawn = self.getPawnType(x, y)
+
+                if pawn == CheckerType.blackNormal():
+                    blackNormalCount += 1
+
+                if pawn == CheckerType.blackSpecial():
+                    blackSpecialCount += 1
+
+                if pawn == CheckerType.whiteNormal():
+                    whiteNormalCount += 1
+
+                if pawn == CheckerType.whiteSpecial():
+                    whiteSpecialCount += 1
+
+        if self.isEnd():
+            endType = self.endType()
+            if endType == "whiteWon":
+                others += -1000
+            if endType == "blackWon":
+                others += +1000
+
+        return (
+                (blackNormalCount + blackSpecialCount * specialFactor) -
+                (whiteNormalCount + whiteSpecialCount * specialFactor) +
+                others
+        )
+
+    def endType(self):
+
         wasBlack = True
         wasWhite = True
 
@@ -311,10 +353,12 @@ class CheckersState:
                 if CheckerType.isWhite(pawn):
                     wasWhite = True
 
-        return wasWhite != wasBlack
+        if wasWhite != wasBlack:
+            if wasWhite:
+                return "whiteWon"
+            return "blackWon"
 
-    def endType(self):
-        pass
+        return None
 
     def sumSalary(self):
         return self._sumSalary
