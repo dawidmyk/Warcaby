@@ -267,7 +267,6 @@ class CheckersState:
                         moveSpecial(-1, -1)
 
         # wymuszenie bicia
-
         for move in self._availableMoves:
             if move.hasBeat():
                 self._availableMoves = list(filter(lambda move: move.hasBeat(), self._availableMoves))
