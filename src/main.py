@@ -1,8 +1,6 @@
-import os
-import random
-import time
+#!/usr/bin/python
 
-from game.ai import move_min_max
+from game.ai import ai_magic_stuff
 from game.state import CheckersState
 from helpers.clearConsole import clearConsole
 from helpers.gameHeader import gameHeader
@@ -17,7 +15,7 @@ state = CheckersState()
 logBuffer = StringBuilder()
 
 while not state.isEnd():
-    # clearConsole()
+    clearConsole()
     gameHeader()
 
     availableMoves = state.getAvailableMoves()
@@ -29,7 +27,7 @@ while not state.isEnd():
     if state.isWhiteMove():
         movesBuffer.append("Ruch gracza")
     if state.isBlackMove():
-        movesBuffer.append("Ruch kompuera")
+        movesBuffer.append("Ruch komputera")
 
     movesBuffer.newLine().newLine().append("Dostępne ruchy: ").newLine()
     for i in range(len(availableMoves)):
@@ -47,20 +45,24 @@ while not state.isEnd():
         logBuffer.append('Biały:  ')
 
     if state.isBlackMove():
-        # komputer wybiera losowy ruch
-        # i tu jest miejsce gdzie robisz magie
-
         print("Komputer myśli ...")
-        startTime = int(round(time.time() * 1000))
-        # choice = random.randrange(0, len(availableMoves))
-        # nextMove = availableMoves[choice]
-        nextMove = move_min_max(availableMoves, 5)
-        endTime = int(round(time.time() * 1000))
-        time.sleep((endTime - startTime)/1000)
+        nextMove = ai_magic_stuff(availableMoves)
 
         logBuffer.append('Czarny: ')
 
     state = CheckersState(nextMove)
     logBuffer.append(nextMove).newLine()
 
+# screen zakończenia
+
 endType = state.endType()
+endScreen = StringBuilder()
+endScreen.newLine().append("     ")
+if endType == "blackWon":
+    endScreen.append("Czarny wygrał")
+elif endType == "whiteWon":
+    endScreen.append("Biały wygrał")
+else:
+    endScreen.append("Taki stan nie powinien się trafić")
+endScreen.newLine().newLine()
+endScreen.print()

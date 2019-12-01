@@ -1,3 +1,24 @@
+import time
+import random
+
+
+def ai_magic_stuff(moves):
+    startTime = int(round(time.time() * 1000))
+
+    try:
+        nextMove = move_min_max(moves, 5)
+    except:
+        # w przpadku błędu algorytmu, które się nie zdażają, wybiera losowy ruch
+        choice = random.randrange(0, len(moves))
+        nextMove = moves[choice]
+
+    # magia zawsze trwa 3 sekundy(lub dłużej)
+    endTime = int(round(time.time() * 1000))
+    print(3 - ((endTime - startTime) / 1000))
+
+    return nextMove
+
+
 def move_min_max(moves, deep):
     # moves = state.getAvailableMoves()
     nextStates = list(map(lambda move: move.getStateTo(), moves))
@@ -23,4 +44,4 @@ def min_max(state, deep):
     if state.isBlackMove():  # minimalizacja
         return min(nextSalaries)
 
-    raise Exception("Doszliśmy do miejsca w któ©ym znaleść się nie powinniśmy")
+    raise Exception("Doszliśmy do miejsca w którym znaleść się nie powinniśmy")

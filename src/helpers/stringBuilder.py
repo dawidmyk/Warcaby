@@ -28,6 +28,9 @@ class StringBuilder:
         """
         return self.append(os.linesep)
 
+    def print(self):
+        print(self)
+
     def __str__(self):
         return self._body
 
