@@ -102,7 +102,8 @@ class CheckersState:
 
             nextState = move.getStateTo()
             if nextState.isContinuousBeating():
-                newMoves = [move]  # tu może pierdolnąć
+                # newMoves = [move]
+                newMoves = []
                 for nextMove in nextState.getAvailableMoves():
                     newMoves.append(CheckerMoveComplex(move, nextMove))
 

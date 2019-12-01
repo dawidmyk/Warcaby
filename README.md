@@ -54,20 +54,20 @@ Podzieliliśmy program na 3 klasy z danymi i 1 pomocniczą:
  - `CheckerMoveComplex` w pliku `src/game/moveComlex.py`, reprezentującą ruch jednego pionka (wiele posunięć)
  - `CheckerType` w pliku `src/game/type.py`, do określania typów pionków i ich drużyn
  
-Stan gry posiada planszę z pionkami, informacje o tym, który gracz ma teraz ruch oraz listę możliwych ruchów oraz kilka innych funkcji ułatwiających implementacje.
+Stan gry posiada planszę z pionkami, informacje o tym, który gracz ma teraz ruch oraz listę możliwych ruchów oraz kilka innych funkcji ułatwiających implementację.
 Stan można utworzyć z ruchu, jako stan kolejny oraz jako stan początkowy nie podając argumentów.
 Stan jest wstanie się sam rozwijać jak o to go poprosimy.
 
-Ruch, zawiera w sobie stan poprzedni i stan następny oraz informacje z kąd do kąd przestawiamy pionek.
-Problemem w warcabach jest to, że ruch może być złożony, a mianowicie, jedne gracz może przestawić pionek kilka razy w jednym ruchu, co utrudnia implementacje.
+Ruch, zawiera w sobie stan poprzedni i stan następny oraz informacje skąd dokąd przestawiamy pionek.
+Problemem w warcabach jest to, że ruch może być złożony, a mianowicie, jeden gracz może przestawić pionek kilka razy w jednym ruchu, co utrudnia implementacje.
 Gdybyśmy uznali taki stan rzeczy to, implementacja ruchu była by trudna i mało edytowalna.
 Dlatego rozwiązaliśmy ten problem, ruch to jedna przedstawienie pionka, a po ruchu gracza, może nastąpić ruch tego samego gracza.
-Taka implementacja uniemożliwiała by implementacje algorytmu min-max, dlatego postanowiliśmy użyć wzorca projektowe: kompozyt.
+Taka implementacja uniemożliwiałaby implementacje algorytmu min-max, dlatego postanowiliśmy użyć wzorca projektowe: kompozyt.
 Stany rozwijając się po jednym ruchu, ale ruchy złożone są pakowane w raz z stanami do obiektu ruchu złożonego.
 Powstaje dualizm drzewa, który działa całkiem przyzwoicie.
 
 Generowanie listy dostępnych kroków jest implementowane przez funkcje `CheckersState._generateAvailableMoves`, w niej są określane dozwolone ruchu gracza i to w niej są definiowane zasady poruszania się pionków na planszy. 
-Analiza przejścia stanów znajduje się w `CheckersState._insertDataFromMove`, definiowane są tam bardziej złożone czynność gry takie jak rozwijanie złożonych ruchów. 
+Analiza przejścia stanów znajduje się w `CheckersState._insertDataFromMove`, definiowane są tam bardziej złożone czynności gry takie jak rozwijanie złożonych ruchów. 
 
 #### Algorytm min-max
 
@@ -78,7 +78,7 @@ Sam algorytm został zaimplementowany w funkcjach `move_min_max` i `min_max`.
 ### Wnioski
 
 Python nie nadaje się do pisania algorytmów.
-Zaimplementowane rozwiązanie jest strasznie wolne, wykonuje się około 3s na bardzo dobrym procesorze.
+Zaimplementowane rozwiązanie jest strasznie wolne, wykonuje się ponad 3s w stanie początkowym na bardzo dobrym procesorze.
 Sam algorytm jest dość prosty w implementacji. 
 
 ## Autorzy
