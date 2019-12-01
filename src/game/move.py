@@ -3,6 +3,9 @@ from game.type import CheckerType
 
 
 class CheckerMove:
+    """
+    Funkcja reprezentuje proste
+    """
     def __init__(self, state, x1, y1, x2, y2):
         self._x1 = x1
         self._y1 = y1
@@ -12,7 +15,7 @@ class CheckerMove:
         self._state2 = None
         self._pawn = state.getPawnType(x1, y1)
 
-        # określenie bicia
+        # określenie czy zachodzi bicie pionka, poprzez iteracje po polach pomiędzy początkiem a końcem
         self._xBeat = -1
         self._yBeat = -1
         dx = 1
@@ -36,6 +39,10 @@ class CheckerMove:
         return self._state1
 
     def getStateTo(self):
+        """
+        Stan następny nie jest generowany dopóki o niego nie poprosimy
+        :return:
+        """
         if self._state2 is None:
             from game.state import CheckersState
             self._state2 = CheckersState(self)
@@ -61,19 +68,22 @@ class CheckerMove:
         return self._xBeat != -1 and self._yBeat != -1
 
     def executeOnBoard(self, board):
+        """
+        Przestawienie pionka na planszy i usunięcie pionka zbitego
+        :param board:
+        :return:
+        """
         pawn2move = self._pawn
         board[self._x1][self._y1] = None
         board[self._x2][self._y2] = pawn2move
         if self.hasBeat():
             board[self._xBeat][self._yBeat] = None
 
-    def selfSalary(self):
-        return 0
-
-    def sumSalary(self):
-        return 0
-
     def getMovePoints(self):
+        """
+        Część ładnego rysowania przejść
+        :return:
+        """
         return [[self._x1, self._y1], [self._x2, self._y2]]
 
     def __str__(self):

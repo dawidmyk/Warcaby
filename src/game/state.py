@@ -3,16 +3,23 @@ from helpers.stringBuilder import StringBuilder
 
 
 class CheckersState:
+    """
+    Klasa stanu gry
+    """
+
+    # Jak widać wielkość planszy można zmienić
     SizeX = 8
     SizeY = 8
 
     def __init__(self, move=None):
         # alokacja pustej planszy
         self._board = [[None for x in range(self.SizeX)] for y in range(self.SizeY)]
+
+        # wartość none oznacza, że nie została przeprowadzona analiza możliwych ruchów
         self._availableMoves = None
-        self._sumSalary = 0
         self._isContinuousBeating = False
 
+        # tworzenie stanu początkowego lub następnego
         if move == None:
             self._next = CheckerType.whiteNormal()
             self._initStartingBoard()
@@ -20,6 +27,10 @@ class CheckersState:
             self._insertDataFromMove(move)
 
     def _initStartingBoard(self):
+        """
+        Naprzemienne wypełnienie początkowej planszy
+        :return:
+        """
         fillRows = 3
 
         def fillRow(x, type):
@@ -27,10 +38,10 @@ class CheckersState:
             for y in range(0 + offset, self.SizeX + offset, 2):
                 self._setPawn(x, y, type)
 
-        for x in range(0, fillRows):
+        for x in range(0, fillRows):  # wypełnienie czarnych
             fillRow(x, CheckerType.blackNormal())
 
-        for x in range(self.SizeX - fillRows, self.SizeX):
+        for x in range(self.SizeX - fillRows, self.SizeX):  # wypełnienie białych
             fillRow(x, CheckerType.whiteNormal())
 
     def _insertDataFromMove(self, move):
@@ -47,25 +58,28 @@ class CheckersState:
         # ustalenie następnego gracza
         if move.hasBeat():
 
+            # tu jest trochę triki, ponieważ możemy kontynuować, tylko wtedy gdy zbijemy i zbijamy dalej
+            # dlatego generujemy ruchy i sprawdzamy czy możemy bić dalej, ale tym konkretnym pionkiem
+
             if lastState.isWhiteMove():
                 self._next = CheckerType.whiteNormal()
             if lastState.isBlackMove():
                 self._next = CheckerType.blackNormal()
-
-            # tu jest troche triki, ponieważ możemy kontynłować, tylko wtedy gdy zbijemy i zbijamy dalej
-            # dlatego generujemy ruchy i sprawdzmy czy możemy bić dalej, ale tym konkretnym pionkiem
             self._generateAvailableMoves()
 
+            # znajdujemy tylko ruchy naszego ruszonego pionka
             def filerOurPawnMoves(newMove):
                 return newMove.getFromX() == move.getToX() and \
                        newMove.getFromY() == move.getToY()
 
             moves = list(filter(filerOurPawnMoves, self._availableMoves))
+
             if len(moves) > 0 and moves[0].hasBeat():
-                # jest możliwośc kontynuacji bicia tym pionem
+                # jest możliwość kontynuacji bicia tym pionem
                 self._availableMoves = moves
                 self._isContinuousBeating = True
             else:
+                # jak jej niema
                 if lastState.isWhiteMove():
                     self._next = CheckerType.blackNormal()
                 if lastState.isBlackMove():
@@ -88,7 +102,7 @@ class CheckersState:
 
             nextState = move.getStateTo()
             if nextState.isContinuousBeating():
-                newMoves = []
+                newMoves = [move]  # tu może pierdolnąć
                 for nextMove in nextState.getAvailableMoves():
                     newMoves.append(CheckerMoveComplex(move, nextMove))
 
@@ -97,17 +111,23 @@ class CheckersState:
                 return [move]
 
         self._availableMoves = list(map(extendBeatMove, self.getAvailableMoves()))
-        # wyprostowanie listy, ponieważ teraz mamy liste list
+        # wyprostowanie listy, ponieważ teraz mamy listę list
         # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
         self._availableMoves = [item for sublist in self._availableMoves for item in sublist]
 
         # upgrade do damki
+        # ponieważ w czasie bicia gdy przeskoczymy do końca, ale się nie zatrzymamy to nie stajemy się damką
         if not self._isContinuousBeating and (
                 (CheckerType.isWhite(move.getPawnType()) and move.getToX() == 0) or
                 (CheckerType.isBlack(move.getPawnType()) and move.getToX() == CheckersState.SizeX - 1)):
             self._setPawn(move.getToX(), move.getToY(), CheckerType.upgrade(move.getPawnType()))
 
     def boardString(self):
+        """
+        Funkcja odpowiada za generowanie ładnej planszy z pionkami
+        :return:
+        """
+
         # https://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
         vLine = '║'
         hLine = '═'
@@ -117,6 +137,16 @@ class CheckersState:
         pawnNormalBlack = ' □ '
         pawnSpecialBlack = '<□>'
         emptyCell = '   '
+
+        # zestaw alternatywny
+        # vLine = '|'
+        # hLine = '-'
+        # cross = '+'
+        # pawnNormalWhite = ' W '
+        # pawnSpecialWhite = ' W*'
+        # pawnNormalBlack = ' B '
+        # pawnSpecialBlack = ' B*'
+        # emptyCell = '   '
 
         buffer = StringBuilder()
 
@@ -156,14 +186,21 @@ class CheckersState:
         from game.move import CheckerMove
 
         self._availableMoves = []
+
+        # iteracja po całej planszy
         for x in range(self.SizeX):
             for y in range(self.SizeY):
                 pawn = self.getPawnType(x, y)
 
+                # w poniższych funkcjach dx i dy reprezentują kierunek ruchu pionka/damki
+
                 def moveNormalForward(dx, dy):
+                    """
+                    Obsługa ruchu do przodu i bicia pionka
+                    """
                     x2, y2 = x + dx, y + dy
 
-                    # jeżeli pozycje nie jest na planysz to koniec
+                    # jeżeli pozycje nie jest na planszy to koniec
                     if not self.isPositionValid(x2, y2):
                         return
 
@@ -188,9 +225,12 @@ class CheckersState:
                             CheckerMove(self, x, y, x3, y3))
 
                 def moveNormalBackward(dx, dy):
+                    """
+                    Obsługa ruchu bicia do tyłu pionka
+                    """
                     x2, y2 = x + dx, y + dy
 
-                    # jeżeli pozycje nie jest na planysz to koniec
+                    # jeżeli pozycje nie jest na planszy to koniec
                     if not self.isPositionValid(x2, y2):
                         return
 
@@ -212,6 +252,9 @@ class CheckersState:
                             CheckerMove(self, x, y, x3, y3))
 
                 def moveSpecial(dx, dy):
+                    """
+                    Obsługa ruchu i bicia damki
+                    """
                     x2 = x + dx
                     y2 = y + dy
                     wasPawn = False
@@ -226,9 +269,13 @@ class CheckersState:
                             pawn2 = self.getPawnType(x2, y2)
 
                             if CheckerType.isSameTeam(pawn, pawn2):
+                                # natrafiono na pionek tej samej drużyny
                                 return
 
                             if wasPawn:
+                                # był pionek, który nie był z tej samej drużyny
+                                self._availableMoves.append(  # sprawdzić poprawność w długiej grze
+                                    CheckerMove(self, x, y, x2, y2))
                                 return
 
                             wasPawn = True
@@ -239,13 +286,14 @@ class CheckersState:
                 if self.isBlackMove():
 
                     if pawn == CheckerType.blackNormal():
-                        ## czarne idą w dół(+)
+                        # czarne idą w dół(+)
                         moveNormalForward(+1, +1)
                         moveNormalForward(+1, -1)
                         moveNormalBackward(-1, +1)
                         moveNormalBackward(-1, -1)
 
                     if pawn == CheckerType.blackSpecial():
+                        # a damki gdziekolwiek
                         moveSpecial(+1, +1)
                         moveSpecial(+1, -1)
                         moveSpecial(-1, +1)
@@ -254,13 +302,14 @@ class CheckersState:
                 if self.isWhiteMove():
 
                     if pawn == CheckerType.whiteNormal():
-                        ## czarne idą w góre(-)
+                        # białe idą w górę(-)
                         moveNormalForward(-1, +1)
                         moveNormalForward(-1, -1)
                         moveNormalBackward(+1, +1)
                         moveNormalBackward(+1, -1)
 
                     if pawn == CheckerType.whiteSpecial():
+                        # a damki gdziekolwiek
                         moveSpecial(+1, +1)
                         moveSpecial(+1, -1)
                         moveSpecial(-1, +1)
@@ -298,9 +347,6 @@ class CheckersState:
 
     def isContinuousBeating(self):
         return self._isContinuousBeating
-
-    def isEnd(self):
-        return self.endType() is not None
 
     def getSalary(self):
         specialFactor = 1.6
@@ -340,7 +386,14 @@ class CheckersState:
                 others
         )
 
+    def isEnd(self):
+        return self.endType() is not None
+
     def endType(self):
+        """
+        Określenie typu stanu terminalnego, bo są dwa
+        :return:
+        """
 
         wasBlack = True
         wasWhite = True
@@ -358,6 +411,3 @@ class CheckersState:
             return "blackWon"
 
         return None
-
-    def sumSalary(self):
-        return self._sumSalary

@@ -2,12 +2,15 @@ import os
 
 
 class StringBuilder:
+    """
+    Klasa służy jako pomocnik do budowania długich sekwencji tekstu
+    """
     def __init__(self):
         self._body = ''
 
     def clear(self):
         """
-
+        Czyści buffor
         :return StringBuilder:
         """
         self._body = ''
@@ -15,6 +18,7 @@ class StringBuilder:
 
     def append(self, text):
         """
+
         :param text:
         :return StringBuilder:
         """
@@ -23,7 +27,7 @@ class StringBuilder:
 
     def newLine(self):
         """
-
+        Dodaje zakończenie lini
         :return StringBuilder:
         """
         return self.append(os.linesep)

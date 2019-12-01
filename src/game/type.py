@@ -1,4 +1,8 @@
 class CheckerType:
+    """
+    Pionki są reprezentowane przez litery, jest to klasa pomocnicza ułatwiająca analizę pionków na i ich relacje.
+    Damki są w kodzie oznaczone jako pionki specjalne.
+    """
 
     @staticmethod
     def blackNormal():

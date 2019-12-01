@@ -2,6 +2,13 @@ import os
 
 
 def horizontalConcat(first, second, spacer):
+    """
+    Tworzy kolumny tekstowe, łączy dwa wielo-linijkowe teksty w jeden wspólny, mniej więcej tak: "A|B"
+    :param first:
+    :param second:
+    :param spacer:
+    :return:
+    """
     buffer = ''
 
     first = first.splitlines()

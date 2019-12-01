@@ -2,6 +2,10 @@ import math
 
 
 def gameHeader():
+    """
+    Ładny nagłówek programu
+    :return:
+    """
     title = " Warcaby "
 
     authorsTitle = "Autorzy:"

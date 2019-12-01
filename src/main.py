@@ -6,12 +6,13 @@ from helpers.clearConsole import clearConsole
 from helpers.gameHeader import gameHeader
 from helpers.getInt import getInt
 
-# stan początkowy
 from helpers.horizontalConcat import horizontalConcat
 from helpers.stringBuilder import StringBuilder
 
+# stan początkowy
 state = CheckersState()
 
+# zapis historia ruchów
 logBuffer = StringBuilder()
 
 while not state.isEnd():
@@ -20,6 +21,8 @@ while not state.isEnd():
 
     availableMoves = state.getAvailableMoves()
     nextMove = None
+
+    # tworzenie interfejsu użytkownika
 
     gameBuffer = state.boardString()
     movesBuffer = StringBuilder()
@@ -34,6 +37,8 @@ while not state.isEnd():
         movesBuffer.append(i + 1).append(': ').append(availableMoves[i]).newLine()
 
     print(horizontalConcat(horizontalConcat(gameBuffer, str(movesBuffer), '  |  '), str(logBuffer), '  |  '))
+
+    # wybór sposobu wykonania ruchu, albo gracz, albo komputer
 
     if state.isWhiteMove():
         while True:
@@ -50,6 +55,7 @@ while not state.isEnd():
 
         logBuffer.append('Czarny: ')
 
+    # wybranie stanu i dodanie go do historii
     state = CheckersState(nextMove)
     logBuffer.append(nextMove).newLine()
 

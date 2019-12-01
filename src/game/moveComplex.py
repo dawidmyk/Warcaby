@@ -2,11 +2,14 @@ from game.move import CheckerMove
 
 
 class CheckerMoveComplex:
+    """
+    Klasa odpowiada za ruchy wielokrotne, składające się z dwóch innych ruchów
+    """
     def __init__(self, first, second):
         self._first = first
         self._second = second
 
-        if (
+        if (  # zabezpieczenie przed dodanie dwóch ruchów, które nie powinny być łączone
                 first.getToX() != second.getFromX() or
                 first.getToY() != second.getFromY() or
                 first.getPawnType() != second.getPawnType()
